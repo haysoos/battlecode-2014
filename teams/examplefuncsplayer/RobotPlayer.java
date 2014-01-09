@@ -1,11 +1,12 @@
 package examplefuncsplayer;
 
+import java.util.Random;
+
 import battlecode.common.Direction;
-import battlecode.common.GameConstants;
+import battlecode.common.Robot;
 import battlecode.common.RobotController;
+import battlecode.common.RobotInfo;
 import battlecode.common.RobotType;
-import battlecode.common.*;
-import java.util.*;
 
 public class RobotPlayer {
 	static Random rand;
