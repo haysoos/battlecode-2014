@@ -1,7 +1,9 @@
 battlecode/common/MapLocation/getAllMapLocationsWithinRadiusSq				25		false
+battlecode/common/RobotController/senseTeamMilkQuantity			100	false
 battlecode/common/RobotController/sensePastrLocations			100	false
 battlecode/common/RobotController/senseRobotCount			5	false
 battlecode/common/RobotController/senseBroadcastingRobots			100	false
+battlecode/common/RobotController/senseBroadcastingRobotLocations			100	false
 battlecode/common/RobotController/senseCowGrowth			100	false
 battlecode/common/RobotController/senseCowsAtLocation			10	false
 battlecode/common/RobotController/sneak				25	true
