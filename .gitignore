@@ -1,2 +1,4 @@
 /.installationinformation
 /bin
+.classpath
+.project
