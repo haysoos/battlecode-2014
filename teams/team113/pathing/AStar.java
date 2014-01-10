@@ -7,9 +7,13 @@ import java.util.Set;
 
 public class AStar<N> {
 	private final Heuristic<N> mHeuristic;
+	private final Metric<N> mMetric;
+	private final GraphView<N> mGraphView;
 	
-	public AStar(Heuristic<N> heuristic) {
+	public AStar(Heuristic<N> heuristic, Metric<N> metric, GraphView<N> graphView) {
 		mHeuristic = heuristic;
+		mMetric = metric;
+		mGraphView = graphView;
 	}
 		
     public Path<N> findPath(final N source, final N target) {
@@ -28,12 +32,12 @@ public class AStar<N> {
     	  
     	  visited.add(next.getHead());
     	  
-    	  Set<N> neighbors = new HashSet<N>();  // TODO find neighbors.
+    	  Set<N> neighbors = mGraphView.getNeighbors(next.getHead());
     	  for (N elt : neighbors) {
     		  if (visited.contains(elt)) {
     			  continue;
     		  }
-    		  double cost = 1;  // TODO compute cost.
+    		  double cost = mMetric.evaluate(next.getHead(), elt);
     		  queue.add(next.addHead(elt, cost));
     	  }    	  
     	}
@@ -41,7 +45,15 @@ public class AStar<N> {
     }
     
     public interface Heuristic<N> {
-    	double compute(N a, N target);
+    	double evaluate(N node, N target);
+    }
+    
+    public interface Metric<N> {
+    	double evaluate(N node1, N node2);
+    }
+    
+    public interface GraphView<N> {
+    	Set<N> getNeighbors(N node);
     }
     
     private static final class PathComparator<N> implements Comparator<Path<N>> {
@@ -55,8 +67,8 @@ public class AStar<N> {
     	
 		@Override
 		public int compare(Path<N> p1, Path<N> p2) {
-			double c1 = p1.getCost() + mHeuristic.compute(p1.getHead(), mTarget);
-			double c2 = p1.getCost() + mHeuristic.compute(p1.getHead(), mTarget);
+			double c1 = p1.getCost() + mHeuristic.evaluate(p1.getHead(), mTarget);
+			double c2 = p1.getCost() + mHeuristic.evaluate(p1.getHead(), mTarget);
 			return Double.compare(c1, c2);
 		}
     }
