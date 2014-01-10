@@ -7,12 +7,12 @@ import team113.common.Constants;
 import team113.communication.Message;
 import team113.pathing.PathingAlgorithm;
 import team113.states.State;
-
 import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
 import battlecode.common.Robot;
 import battlecode.common.RobotController;
 import battlecode.common.RobotInfo;
+import battlecode.common.RobotType;
 
 public abstract class BaseRobot {
 
@@ -71,8 +71,11 @@ public abstract class BaseRobot {
 	}
 
 	public void attackRobot(RobotInfo robotInfo) {
+		if (robotInfo == null) {
+			return ;
+		}
 		try {
-			if (rc.isActive()) {
+			if (rc.isActive() && rc.getLocation().distanceSquaredTo(robotInfo.location) < 10) {
 				rc.attackSquare(robotInfo.location);
 			}
 		} catch (GameActionException e) {
@@ -85,23 +88,36 @@ public abstract class BaseRobot {
 			return null;
 		}
 		RobotInfo weakest = null;
-		try {
-			weakest = rc.senseRobotInfo(robots[0]);
-			for (Robot robot : robots) {
+
+		for (Robot robot : robots) {
+			try {
 				RobotInfo robotInfo = rc.senseRobotInfo(robot);
-				if (robotInfo.health < weakest.health) {
+				if (weakest == null) {
 					weakest = robotInfo;
 				}
+				if (!isHQ(robotInfo) && (robotInfo.health < weakest.health)) {
+					weakest = robotInfo;
+				}
+			} catch (GameActionException e) {
+				//printErrorMessage(e);
 			}
-		} catch (GameActionException e) {
-			printErrorMessage(e);
 		}
 
+		if (isHQ(weakest)) {
+			return null;
+		}
 		return weakest;
 	}
 
+	private boolean isHQ(RobotInfo robotInfo) {
+		if (robotInfo == null) {
+			return false;
+		}
+		return robotInfo.type.equals(RobotType.HQ);
+	}
+
 	public Robot[] senseNearbyEnemyRobots() {
-		return rc.senseNearbyGameObjects(Robot.class, 10, rc.getTeam().opponent());
+		return rc.senseNearbyGameObjects(Robot.class, 35, rc.getTeam().opponent());
 	}
 
 	public void setPathingAlgorithm(PathingAlgorithm pathingAlgorithm) {
@@ -138,8 +154,9 @@ public abstract class BaseRobot {
 	}
 
 	public void checkForNearbyEnemy() {
+		RobotInfo weakestRobot = getWeakestEnemyInRange(senseNearbyEnemyRobots());
 		if (isEnemyInRange()) {
-			enemyInSightAction(null);
+			enemyInSightAction(weakestRobot);
 		}
 	}
 

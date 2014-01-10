@@ -2,6 +2,7 @@ package team113.strategies.hq;
 
 import battlecode.common.Direction;
 import battlecode.common.GameActionException;
+import battlecode.common.GameConstants;
 import team113.common.Constants;
 import team113.robots.BaseRobot;
 import team113.states.State;
@@ -29,7 +30,10 @@ public class HQSpawningState implements State {
 		try {
 			robot.getRobotController().spawn(direction);
 		} catch (GameActionException e) {
-			robot.printErrorMessage(e);
+			if (!e.getMessage().contains("Maximum robot limit reached.")) {
+				robot.printErrorMessage(e);
+			}
+			
 		}
 	}
 
