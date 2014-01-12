@@ -1,4 +1,4 @@
-package team1024;
+package team1024.action;
 
 import team1024.RobotPlayer.WorldInfo;
 

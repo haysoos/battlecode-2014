@@ -1,4 +1,4 @@
-package team1024;
+package team1024.goalmotor;
 
 import java.util.List;
 
