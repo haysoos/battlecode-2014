@@ -8,11 +8,8 @@ import battlecode.common.RobotType;
 
 public class SoldierRC extends RC {
 	
-	private final RobotController rc;
-	
 	public SoldierRC(RobotController rc) {
 		super(rc);
-		this.rc = rc;
 	}
 
 	public void attackSquare(MapLocation arg0) throws GameActionException {
@@ -40,7 +37,6 @@ public class SoldierRC extends RC {
 
 	public RobotType getConstructingType() {
 		return rc.getConstructingType();
-		
 	}
 
 	public boolean isConstructing() {

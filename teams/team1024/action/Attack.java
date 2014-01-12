@@ -1,10 +1,9 @@
 package team1024.action;
 
-import battlecode.common.GameActionException;
+import team1024.rc.SoldierRC;
+import team1024.worldinfo.WorldInfo;
 import battlecode.common.Robot;
 import battlecode.common.RobotInfo;
-import team1024.RobotPlayer.WorldInfo;
-import team1024.rc.SoldierRC;
 
 public class Attack implements Action {
 
@@ -16,15 +15,11 @@ public class Attack implements Action {
 
 	@Override
 	public void performAction(WorldInfo info) {
-		try {
-			Robot[] nearbyEnemies = rc.senseNearbyGameObjects(Robot.class, 10,
-					rc.getTeam().opponent());
-			if (nearbyEnemies.length > 0) {
-				RobotInfo robotInfo = rc.senseRobotInfo(nearbyEnemies[0]);
-				rc.attackSquare(robotInfo.location);
-			}
-		} catch (GameActionException e) {
-			e.printStackTrace();
+		Robot[] nearbyEnemies = rc.senseNearbyEnemyRobots();
+		info.setNearbyEnemies(nearbyEnemies);
+		RobotInfo weakest = rc.getWeakestEnemyInRange(nearbyEnemies);
+		if (weakest != null) {
+			rc.attackRobot(weakest);
 		}
 	}
 }

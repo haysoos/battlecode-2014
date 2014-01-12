@@ -8,30 +8,27 @@ import team1024.actionselector.ActionSelector;
 import team1024.actionselector.AlwaysSpawn;
 import team1024.actionselector.BeStupid;
 import team1024.goalmotor.GoalMotor;
+import team1024.goals.Goal;
 import team1024.rc.HQRC;
 import team1024.rc.SoldierRC;
+import team1024.worldinfo.WorldInfo;
 import battlecode.common.RobotController;
 
 public class RobotPlayer {
 
 	public static void run(RobotController rc) {
-		GoalMotor goalMotor = new GoalMotor() {
-			@Override
-			public List<Goal> motorGoals(WorldInfo info) {
-				return new ArrayList<Goal>();
-			}
-		};
-		ActionSelector actionSelector = new ActionSelector() {
-			@Override
-			public List<Action> selectActions(WorldInfo info, List<Goal> goals) {
-				return new ArrayList<Action>();
-			}
-		};
+		ActionSelector actionSelector = turnOnFluxCapacitor(rc);
+		WorldInfo info = createTheHeavensAndTheEarth();
+		runGoalsThroughMotor(rc, actionSelector, info);
+	}
 
+	private static ActionSelector turnOnFluxCapacitor(RobotController rc) {
+		ActionSelector actionSelector = null;
+		
 		switch (rc.getType()) {
 		case HQ:
-			HQRC hqRc = new HQRC(rc);
-			actionSelector = new AlwaysSpawn(hqRc);
+			HQRC hqrc = new HQRC(rc);
+			actionSelector = new AlwaysSpawn(hqrc);
 			break;
 
 		case SOLDIER:
@@ -41,15 +38,24 @@ public class RobotPlayer {
 
 		case NOISETOWER:
 		case PASTR:
-			while (true) {
-				rc.yield();
-			}
+			lookSexy(rc);
 
 		default:
 			throw new RuntimeException("Unknown type " + rc.getType());
 		}
+		return actionSelector;
+	}
 
-		WorldInfo info = null;
+	private static WorldInfo createTheHeavensAndTheEarth() {
+		WorldInfo info = new WorldInfo();
+		return info;
+	}
+
+	private static void runGoalsThroughMotor(RobotController rc,
+			ActionSelector actionSelector, WorldInfo info) {
+		
+		GoalMotor goalMotor = makeGoalMotor();
+		
 		while (true) {
 			List<Goal> goals = goalMotor.motorGoals(info);
 			if (rc.isActive()) {
@@ -64,12 +70,19 @@ public class RobotPlayer {
 		}
 	}
 
-	// TODO Move these to a their own files once defined.
-	public static class WorldInfo {
-
+	private static GoalMotor makeGoalMotor() {
+		GoalMotor goalMotor = new GoalMotor() {
+			@Override
+			public List<Goal> motorGoals(WorldInfo info) {
+				return new ArrayList<Goal>();
+			}
+		};
+		return goalMotor;
 	}
 
-	public static class Goal {
-
+	private static void lookSexy(RobotController rc) {
+		while (true) {
+			rc.yield();
+		}
 	}
 }

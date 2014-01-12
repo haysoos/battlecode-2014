@@ -1,6 +1,7 @@
 package team1024.rc;
 
-import team113.common.Constants;
+import team1024.common.Constants;
+import team1024.communication.Message;
 import battlecode.common.GameActionException;
 import battlecode.common.GameObject;
 import battlecode.common.MapLocation;
@@ -17,7 +18,7 @@ import battlecode.common.TerrainTile;
  **/
 public class RC {
 
-	private final RobotController rc;
+	protected final RobotController rc;
 
 	public RC(RobotController rc) {
 		this.rc = rc;
@@ -44,11 +45,18 @@ public class RC {
 		}
 		RobotInfo weakest = null;
 		try {
-			weakest = rc.senseRobotInfo(robots[0]);
 			for (Robot robot : robots) {
-				RobotInfo robotInfo = rc.senseRobotInfo(robot);
-				if (robotInfo.health < weakest.health) {
-					weakest = robotInfo;
+				if (rc.canSenseObject(robot)) {
+					RobotInfo robotInfo = rc.senseRobotInfo(robot);
+					if (weakest == null) {
+						weakest = robotInfo;
+						continue;
+					}
+					if (robotInfo.health < weakest.health) {
+						weakest = robotInfo;
+					} else if (isNewRobotCloserThanWeakest(weakest, robotInfo)) {
+						weakest = robotInfo;
+					}
 				}
 			}
 		} catch (GameActionException e) {
@@ -58,6 +66,10 @@ public class RC {
 		return weakest;
 	}
 
+	private boolean isNewRobotCloserThanWeakest(RobotInfo weakest, RobotInfo robotInfo) {
+		return robotInfo.location.distanceSquaredTo(getLocation()) < weakest.location.distanceSquaredTo(getLocation());
+	}
+
 	public Robot[] senseNearbyEnemyRobots() {
 		return rc.senseNearbyGameObjects(Robot.class, 10, rc.getTeam().opponent());
 	}
@@ -65,7 +77,7 @@ public class RC {
 	public MapLocation getLocation() {
 		return rc.getLocation();
 	}
-	
+
 	public void setRobotIndicator(int index, String indicatorMessage) {
 		if (Constants.VERBOSE) {
 			rc.setIndicatorString(index, indicatorMessage);
@@ -87,8 +99,13 @@ public class RC {
 		rc.breakpoint();
 	}
 
-	public void broadcast(int arg0, int arg1) throws GameActionException {
-		rc.broadcast(arg0, arg1);
+	public void broadcast(int channel, int encodedMessage) {
+		try {
+			rc.broadcast(channel, encodedMessage);
+			setIndicatorString(Constants.INDICATOR_MESSAGE, Message.decode(encodedMessage).toString());
+		} catch (GameActionException e) {
+			printErrorMessage(e);
+		}
 	}
 
 	public boolean canSenseObject(GameObject arg0) {
@@ -230,7 +247,9 @@ public class RC {
 	}
 
 	public void setIndicatorString(int arg0, String arg1) {
-		rc.setIndicatorString(arg0, arg1);
+		if (Constants.VERBOSE) {
+			rc.setIndicatorString(arg0, arg1);
+		}		
 	}
 
 	public void setTeamMemory(int arg0, long arg1) {

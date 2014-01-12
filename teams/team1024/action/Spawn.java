@@ -1,8 +1,10 @@
 package team1024.action;
 
-import battlecode.common.Direction;
-import team1024.RobotPlayer.WorldInfo;
 import team1024.rc.HQRC;
+import team1024.worldinfo.WorldInfo;
+import battlecode.common.Direction;
+import battlecode.common.GameActionException;
+import battlecode.common.GameConstants;
 
 public final class Spawn implements Action {
 	
@@ -16,14 +18,14 @@ public final class Spawn implements Action {
 	public void performAction(WorldInfo info) {
 		try {					
 			//Check if a robot is spawnable and spawn one if it is.
-			if (rc.isActive() && rc.senseRobotCount() < 25) {
+			if (rc.isActive() && rc.senseRobotCount() < GameConstants.MAX_ROBOTS) {
 				Direction toEnemy = rc.getLocation().directionTo(rc.senseEnemyHQLocation());
 				if (rc.senseObjectAtLocation(rc.getLocation().add(toEnemy)) == null) {
 					rc.spawn(toEnemy);
 				}
 			}
-		} catch (Exception e) {
-			System.out.println("HQ Exception: " + e.getMessage());
+		} catch (GameActionException e) {
+			rc.printErrorMessage(e);
 		}
 	}
 

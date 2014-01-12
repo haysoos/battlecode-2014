@@ -4,22 +4,26 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import team1024.RobotPlayer.Goal;
-import team1024.RobotPlayer.WorldInfo;
 import team1024.action.Action;
 import team1024.action.Attack;
+import team1024.action.Broadcast;
 import team1024.action.Move;
+import team1024.action.SoldierBroadcast;
+import team1024.goals.Goal;
 import team1024.rc.SoldierRC;
+import team1024.worldinfo.WorldInfo;
 
 public class BeStupid implements ActionSelector {
 	private final Random rand = new Random();
 	
 	private final Move move;
 	private final Attack attack;
+	private final Broadcast<SoldierRC> broadcast;
 	
 	public BeStupid(SoldierRC rc) {
 		move = new Move(rc);
 		attack = new Attack(rc);
+		broadcast = new SoldierBroadcast(rc);
 	}
 
 	@Override
@@ -30,6 +34,7 @@ public class BeStupid implements ActionSelector {
 		} else {
 			result.add(attack);
 		}
+		result.add(broadcast);
 		return result;
 	}
 
