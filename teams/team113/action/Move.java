@@ -19,32 +19,21 @@ public class Move implements Action {
 	@Override
 	public void performAction(WorldInfo info) {
 		try {
-			int action = (rc.getRobot().getID() * rand.nextInt(101) + 50) % 101;
-			action = 0;
-			if (action < 50) {
-				Direction moveDirection = rc.getLocation().directionTo(info.getGoalLocation());
-				if (moveDirection == Direction.OMNI || moveDirection == Direction.NONE){
-					return ;
+			Direction moveDirection = rc.getLocation().directionTo(info.getGoalLocation());
+			if (moveDirection == Direction.OMNI || moveDirection == Direction.NONE){
+				return ;
+			}
+			int counter = 0;
+			while (!rc.canMove(moveDirection)) {
+				moveDirection = moveDirection.rotateRight();
+				if (counter++ > 8) {
+					return;
 				}
-				int counter = 0;
-				while (!rc.canMove(moveDirection)) {
-					moveDirection = moveDirection.rotateRight();
-					if (counter++ > 8) {
-						return;
-					}
-				}
-				if (rc.canMove(moveDirection) && rc.isActive()) {
-					rc.sneak(moveDirection);
-				}
-				// Sneak towards the enemy
-			} 
-			//			else {
-			//				Direction toEnemy = rc.getLocation().directionTo(
-			//						rc.senseEnemyHQLocation());
-			//				if (rc.canMove(toEnemy)) {
-			//					rc.sneak(toEnemy);
-			//				}
-			//			}
+			}
+			if (rc.canMove(moveDirection) && rc.isActive()) {
+				rc.sneak(moveDirection);
+			}
+
 		} catch (GameActionException e) {
 			e.printStackTrace();
 		}
