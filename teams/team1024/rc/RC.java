@@ -1,5 +1,9 @@
 package team1024.rc;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import team1024.common.Constants;
 import team1024.communication.Message;
 import battlecode.common.GameActionException;
@@ -22,11 +26,6 @@ public class RC {
 
 	public RC(RobotController rc) {
 		this.rc = rc;
-	}
-
-	public boolean isEnemyInRange() {
-		Robot[] robots = senseNearbyEnemyRobots();
-		return robots.length > 0;
 	}
 
 	public void attackRobot(RobotInfo robotInfo) {
@@ -66,12 +65,52 @@ public class RC {
 		return weakest;
 	}
 
+	public RobotInfo getWeakestEnemyInRange(List<RobotInfo> robots) {
+		if (robots == null || robots.size() == 0) {
+			return null;
+		}
+		RobotInfo weakest = null;
+		for (RobotInfo robot : robots) {
+
+			if (weakest == null) {
+				weakest = robot;
+				continue;
+			}
+			if (robot.health < weakest.health) {
+				weakest = robot;
+			} else if (isNewRobotCloserThanWeakest(weakest, robot)) {
+				weakest = robot;
+			}
+		}
+		
+		return weakest;
+	}
+
 	private boolean isNewRobotCloserThanWeakest(RobotInfo weakest, RobotInfo robotInfo) {
 		return robotInfo.location.distanceSquaredTo(getLocation()) < weakest.location.distanceSquaredTo(getLocation());
 	}
 
-	public Robot[] senseNearbyEnemyRobots() {
-		return rc.senseNearbyGameObjects(Robot.class, 10, rc.getTeam().opponent());
+	public List<RobotInfo> senseNearbyEnemyRobots() {
+		Robot[] robotsArray = rc.senseNearbyGameObjects(Robot.class, 10, rc.getTeam().opponent());
+		List<Robot> robots = Arrays.asList(robotsArray);
+		List<RobotInfo> robotInfo = new ArrayList<RobotInfo>();
+
+		for (Robot robot : robots) {
+			if (canSenseObject(robot)) {
+				try {
+					RobotInfo ri = rc.senseRobotInfo(robot);
+					if (ri.type != RobotType.HQ) {
+						robotInfo.add(ri);
+					}
+				} catch (GameActionException e) {
+					printErrorMessage(e);
+				}
+
+			}
+		}
+
+		return robotInfo;
+
 	}
 
 	public MapLocation getLocation() {

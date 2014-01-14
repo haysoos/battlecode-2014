@@ -1,12 +1,11 @@
 package team1024.action;
 
-import battlecode.common.Robot;
-import battlecode.common.RobotInfo;
 import team1024.common.Constants;
 import team1024.communication.Message;
 import team1024.communication.MessageIntent;
 import team1024.rc.SoldierRC;
 import team1024.worldinfo.WorldInfo;
+import battlecode.common.RobotInfo;
 
 public class SoldierBroadcast extends Broadcast<SoldierRC> {
 
@@ -16,8 +15,7 @@ public class SoldierBroadcast extends Broadcast<SoldierRC> {
 
 	@Override
 	public void broadcast(WorldInfo info) {
-		Robot[] enemies = info.getNearbyEnemies();
-		RobotInfo weakestEnemy = rc.getWeakestEnemyInRange(enemies);
+		RobotInfo weakestEnemy = rc.getWeakestEnemyInRange(info.getNearbyEnemies());
 		if (weakestEnemy != null) {
 			Message message = new Message();
 			message.setMapLocation(weakestEnemy.location);

@@ -2,7 +2,6 @@ package team1024.action;
 
 import team1024.rc.SoldierRC;
 import team1024.worldinfo.WorldInfo;
-import battlecode.common.Robot;
 import battlecode.common.RobotInfo;
 
 public class Attack implements Action {
@@ -15,9 +14,7 @@ public class Attack implements Action {
 
 	@Override
 	public void performAction(WorldInfo info) {
-		Robot[] nearbyEnemies = rc.senseNearbyEnemyRobots();
-		info.setNearbyEnemies(nearbyEnemies);
-		RobotInfo weakest = rc.getWeakestEnemyInRange(nearbyEnemies);
+		RobotInfo weakest = rc.getWeakestEnemyInRange(info.getNearbyEnemies());
 		if (weakest != null) {
 			rc.attackRobot(weakest);
 		}

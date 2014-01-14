@@ -6,10 +6,11 @@ import java.util.List;
 import team1024.action.Action;
 import team1024.actionselector.ActionSelector;
 import team1024.actionselector.AlwaysSpawn;
-import team1024.actionselector.BeStupid;
+import team1024.actionselector.HarvestMilk;
 import team1024.goalmotor.GoalMotor;
 import team1024.goals.Goal;
 import team1024.rc.HQRC;
+import team1024.rc.RC;
 import team1024.rc.SoldierRC;
 import team1024.worldinfo.WorldInfo;
 import battlecode.common.RobotController;
@@ -18,7 +19,7 @@ public class RobotPlayer {
 
 	public static void run(RobotController rc) {
 		ActionSelector actionSelector = turnOnFluxCapacitor(rc);
-		WorldInfo info = createTheHeavensAndTheEarth();
+		WorldInfo info = createTheHeavensAndTheEarth(actionSelector.getRC());
 		runGoalsThroughMotor(rc, actionSelector, info);
 	}
 
@@ -33,7 +34,7 @@ public class RobotPlayer {
 
 		case SOLDIER:
 			SoldierRC soldierRc = new SoldierRC(rc);
-			actionSelector = new BeStupid(soldierRc);
+			actionSelector = new HarvestMilk(soldierRc);
 			break;
 
 		case NOISETOWER:
@@ -46,8 +47,8 @@ public class RobotPlayer {
 		return actionSelector;
 	}
 
-	private static WorldInfo createTheHeavensAndTheEarth() {
-		WorldInfo info = new WorldInfo();
+	private static WorldInfo createTheHeavensAndTheEarth(RC rc) {
+		WorldInfo info = new WorldInfo(rc);
 		return info;
 	}
 

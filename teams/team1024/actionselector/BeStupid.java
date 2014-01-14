@@ -10,6 +10,7 @@ import team1024.action.Broadcast;
 import team1024.action.Move;
 import team1024.action.SoldierBroadcast;
 import team1024.goals.Goal;
+import team1024.rc.RC;
 import team1024.rc.SoldierRC;
 import team1024.worldinfo.WorldInfo;
 
@@ -19,8 +20,10 @@ public class BeStupid implements ActionSelector {
 	private final Move move;
 	private final Attack attack;
 	private final Broadcast<SoldierRC> broadcast;
+	private SoldierRC rc;
 	
 	public BeStupid(SoldierRC rc) {
+		this.rc = rc;
 		move = new Move(rc);
 		attack = new Attack(rc);
 		broadcast = new SoldierBroadcast(rc);
@@ -36,6 +39,11 @@ public class BeStupid implements ActionSelector {
 		}
 		result.add(broadcast);
 		return result;
+	}
+
+	@Override
+	public RC getRC() {
+		return rc;
 	}
 
 }
