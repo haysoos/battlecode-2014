@@ -29,6 +29,7 @@ public class SoldierRC extends RC {
 	}
 
 	public void construct(RobotType arg0) throws GameActionException {
+		rc.construct(arg0);
 	}
 
 	public int getConstructingRounds() {

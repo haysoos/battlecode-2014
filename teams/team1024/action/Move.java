@@ -33,7 +33,7 @@ public class Move implements Action {
 						return;
 					}
 				}
-				if (rc.canMove(moveDirection)) {
+				if (rc.canMove(moveDirection) && rc.isActive()) {
 					rc.sneak(moveDirection);
 				}
 				// Sneak towards the enemy

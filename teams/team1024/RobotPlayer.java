@@ -7,9 +7,13 @@ import team1024.action.Action;
 import team1024.actionselector.ActionSelector;
 import team1024.actionselector.AlwaysSpawn;
 import team1024.actionselector.HarvestMilk;
+import team1024.actionselector.LetsMakeSomeNoise;
+import team1024.actionselector.SpoilerTheirMilk;
+import team1024.common.Constants;
 import team1024.goalmotor.GoalMotor;
 import team1024.goals.Goal;
 import team1024.rc.HQRC;
+import team1024.rc.NoiseTowerRC;
 import team1024.rc.RC;
 import team1024.rc.SoldierRC;
 import team1024.worldinfo.WorldInfo;
@@ -34,10 +38,21 @@ public class RobotPlayer {
 
 		case SOLDIER:
 			SoldierRC soldierRc = new SoldierRC(rc);
-			actionSelector = new HarvestMilk(soldierRc);
+			
+			if (rc.sensePastrLocations(rc.getTeam()).length >= 4) {
+				actionSelector = new SpoilerTheirMilk(soldierRc);
+				soldierRc.setIndicatorString(Constants.INDICATOR_GENERAL, "Spoiler");
+			} else {
+				actionSelector = new HarvestMilk(soldierRc);
+				soldierRc.setIndicatorString(Constants.INDICATOR_GENERAL, "Harvester");
+			}
+			
 			break;
 
 		case NOISETOWER:
+			NoiseTowerRC noiseTowerRc = new NoiseTowerRC(rc);
+			actionSelector = new LetsMakeSomeNoise(noiseTowerRc);
+			break;
 		case PASTR:
 			lookSexy(rc);
 

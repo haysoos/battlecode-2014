@@ -6,9 +6,11 @@ import java.util.List;
 import team1024.action.Action;
 import team1024.action.Attack;
 import team1024.action.Broadcast;
+import team1024.action.ConstructNoiseTower;
 import team1024.action.ConstructPASTR;
 import team1024.action.Move;
 import team1024.action.SoldierBroadcast;
+import team1024.common.Util;
 import team1024.goals.Goal;
 import team1024.rc.RC;
 import team1024.rc.SoldierRC;
@@ -29,6 +31,7 @@ public class HarvestMilk implements ActionSelector {
 		attack = new Attack(rc);
 		broadcast = new SoldierBroadcast(rc);
 		constructPASTR = new ConstructPASTR(rc);
+		
 	}
 	
 	@Override
@@ -36,13 +39,13 @@ public class HarvestMilk implements ActionSelector {
 		List<Action> result = new ArrayList<Action>();
 		info.updateWorldInfo();
 		
-		if (info.getNearbyEnemies().size() > 0) {
+		if (Util.areEnemiesNearby(info)) {
 			result.add(attack);
 			result.add(broadcast);
 		} else if (reachedGoal(info.getGoalLocation())) {
 			result.add(constructPASTR);
 		} else {
-			MapLocation mostMilk = findMapLocationWithMostMilk();
+			MapLocation mostMilk = Util.findMapLocationWithMostMilk(rc);
 			info.setGoalLocation(mostMilk);
 			result.add(move);
 		}		
@@ -51,27 +54,10 @@ public class HarvestMilk implements ActionSelector {
 	}
 
 	private boolean reachedGoal(MapLocation goalLocation) {
-		return goalLocation.equals(rc.getLocation());
+		return goalLocation.distanceSquaredTo(rc.getLocation()) < 2;
 	}
 
-	private MapLocation findMapLocationWithMostMilk() {
-		
-		double[][] milk = rc.senseCowGrowth();
-		
-		int x = 0, y = 0;
-		double maxMilk = Double.MIN_VALUE;
-		for (int i=0; i<milk.length; i++) {
-			for (int j=0; j<milk[i].length; j++) {
-				if (milk[i][j] > maxMilk) {
-					x = i;
-					y = j;
-					maxMilk = milk[i][j];
-				}
-			}
-		}
-		
-		return new MapLocation(x, y);
-	}
+	
 
 	@Override
 	public RC getRC() {

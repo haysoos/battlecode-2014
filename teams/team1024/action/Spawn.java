@@ -19,10 +19,13 @@ public final class Spawn implements Action {
 		try {					
 			//Check if a robot is spawnable and spawn one if it is.
 			if (rc.isActive() && rc.senseRobotCount() < GameConstants.MAX_ROBOTS) {
-				Direction toEnemy = rc.getLocation().directionTo(rc.senseEnemyHQLocation());
-				if (rc.senseObjectAtLocation(rc.getLocation().add(toEnemy)) == null) {
-					rc.spawn(toEnemy);
-				}
+				Direction spawnDirection = rc.getLocation().directionTo(rc.senseEnemyHQLocation());
+				
+				while (!rc.canSpawn(spawnDirection)) {
+					spawnDirection = spawnDirection.rotateRight();
+				} 
+				
+				rc.spawn(spawnDirection);
 			}
 		} catch (GameActionException e) {
 			rc.printErrorMessage(e);

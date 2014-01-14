@@ -13,4 +13,8 @@ public class HQRC extends RC {
 	public void spawn(Direction arg0) throws GameActionException {
 		rc.spawn(arg0);
 	}
+
+	public boolean canSpawn(Direction spawnDirection) {
+		return rc.canMove(spawnDirection);
+	}
 }
