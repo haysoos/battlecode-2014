@@ -1,4 +1,4 @@
-package team113.communication;
+package team2048.communication;
 
 import battlecode.common.MapLocation;
 
@@ -18,7 +18,7 @@ public class Message implements Comparable<Message> {
 	private static final int MESSAGE_TYPE_MASK = ((1 << SIZE_OF_MESSAGE_TYPE) - 1) 
 			<< (SIZE_OF_COORDINATE * 2);
 
-
+	
 	public MessageIntent getIntent() {
 		return intent;
 	}
@@ -30,7 +30,7 @@ public class Message implements Comparable<Message> {
 	public void setMapLocation(MapLocation mapLocation) {
 		this.mapLocation = mapLocation;
 	}
-
+	
 	public void setMessageIntent(MessageIntent intent) {
 		this.intent = intent;
 	}
@@ -44,7 +44,7 @@ public class Message implements Comparable<Message> {
 				| mapLocation.y;
 		return code;
 	}
-
+	
 	/**
 	 * Static method to decode a message sent as an integer.
 	 * @param encodedMessage
@@ -57,20 +57,20 @@ public class Message implements Comparable<Message> {
 
 		MessageIntent intent = extractMessageIntent(encodedMessage);
 		message.setMessageIntent(intent);
-
+	
 		return message;
 	}
 
 	private static MessageIntent extractMessageIntent(int encodedMessage) {
 		int messageTypeOrdinal;
 		messageTypeOrdinal = (encodedMessage & MESSAGE_TYPE_MASK) >> (2 * SIZE_OF_COORDINATE);
-
+	
 		for(MessageIntent intent : MessageIntent.values()){
 			if(intent.ordinal() == messageTypeOrdinal){
 				return intent;
 			}
 		}
-
+		
 		return null;
 	}
 
@@ -78,10 +78,11 @@ public class Message implements Comparable<Message> {
 		int x;
 		int y;
 
+
 		y = encodedMessage & Y_MASK;
 		x = (encodedMessage & X_MASK) >> SIZE_OF_COORDINATE;
-
-		MapLocation location = new MapLocation(x, y);
+	
+	MapLocation location = new MapLocation(x, y);
 		return location;
 	}
 
@@ -92,9 +93,8 @@ public class Message implements Comparable<Message> {
 
 	@Override
 	public String toString() {
-		return new StringBuilder().append("Message [mapLocation=").
-				append(mapLocation).append(", intent=").append(intent).
-				append("]").toString();
+		return "Message [mapLocation=" + mapLocation + ", intent=" + intent
+				+ "]";
 	}
 
 }
