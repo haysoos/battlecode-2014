@@ -17,52 +17,87 @@ import battlecode.common.TerrainTile;
 
 public class Move implements Action {
 	private final SoldierRC rc;
-
+		
 	private Path<MapLocation> path;
-
+	private MapLocation currentTarget;
+	private boolean deveated;
+	
+	// TODO decouple state from the move action.
 	public Move(SoldierRC rc) {
 		this.rc = rc;
 	}
-
-	public boolean prepareToMove(MapLocation target) {
+	
+	public boolean updateTarget(MapLocation newTarget) {
+		currentTarget = newTarget;
+		
 		TheHeuristicClass h = new TheHeuristicClass();
 		TheClass c = new TheClass(rc);
 		AStar<MapLocation> astar = new AStar<MapLocation>(h, c, c);
-		path = astar.findPath(target, rc.getLocation());
-
-		if (path == null) {
-			return false;
+		MapLocation source = rc.getLocation();
+		path = astar.findPath(source, currentTarget);
+		
+		if (path != null) {
+			path = path.getTail();
+			return true;
 		}
-		if (!path.getHead().equals(rc.getLocation())) {
-			path = null;
-			return false;
+		
+		return false;		
+	}	
+	
+	// call when we decided to deviate from path, and want to fix it.
+	private void fixDeviation() {
+		TheHeuristicClass h = new TheHeuristicClass();
+		TheClass c = new TheClass(rc);
+		AStar<MapLocation> astar = new AStar<MapLocation>(h, c, c);
+		astar.addSeedPath(path.getTail());
+		MapLocation source = rc.getLocation();
+		path = astar.findPath(source, currentTarget);
+		
+		if (path != null) {
+			path = path.getTail();
 		}
-		path = path.getTail();
-		return true;
+		
+		deveated = false;
 	}
-
-	public boolean needsPath() {
-		return path == null;
+	
+	public MapLocation currentTarget() {
+		return currentTarget;
+	}
+	
+	public boolean atTarget(int sqDist) {
+		return rc.getLocation().distanceSquaredTo(currentTarget) <= sqDist;
+	}
+	
+	public boolean havePath() {
+		return path != null;
 	}
 
 	@Override
 	public void performAction(WorldInfo info) {
-		if (needsPath()) {
-			prepareToMove(info.getGoalLocation());
-		}
-		if (needsPath()) {
+		if (path == null) {
 			return;
 		}
-		try {
+		if (deveated) {
+			fixDeviation();
+		}
+		try {			
 			Direction dir = rc.getLocation().directionTo(path.getHead());
 			if (dir == Direction.OMNI || dir == Direction.NONE) {
 				path = null;
 				return;
-			}
+			}			
 			if (rc.canMove(dir)) {
 				rc.sneak(dir);
-			    path = path.getTail();
-			} 
+				path = path.getTail();
+				return;
+			}
+			Direction deviatedDir = dir.rotateLeft();
+			if (rc.canMove(deviatedDir)) {
+				rc.move(deviatedDir);
+				deveated = true;
+				return;
+			}
+			
 		} catch (GameActionException e) {
 			System.out.println(e.getMessage());
 			e.printStackTrace();
@@ -89,13 +124,14 @@ public class Move implements Action {
 		@Override
 		public Set<MapLocation> getNeighbors(MapLocation node) {
 			Set<MapLocation> result = new HashSet<MapLocation>();
-			MapLocation[] neighbors = MapLocation.getAllMapLocationsWithinRadiusSq(node, 2);
+			MapLocation[] neighbors = MapLocation
+					.getAllMapLocationsWithinRadiusSq(node, 2);
 			for (MapLocation loc : neighbors) {
-				if (rc.senseTerrainTile(loc) == TerrainTile.OFF_MAP ||
-					rc.senseTerrainTile(loc) == TerrainTile.VOID) {
+				if (rc.senseTerrainTile(loc) == TerrainTile.OFF_MAP
+						|| rc.senseTerrainTile(loc) == TerrainTile.VOID) {
 					continue;
 				}
-				result.add(loc);	
+				result.add(loc);
 			}
 			return result;
 		}
