@@ -299,10 +299,6 @@ public class RC {
 		rc.setTeamMemory(arg0, arg1, arg2);
 	}
 
-	public void suicide() {
-		rc.suicide();
-	}
-
 	public void wearHat() throws GameActionException {
 		rc.wearHat();		
 	}
