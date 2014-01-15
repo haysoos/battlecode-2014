@@ -16,6 +16,7 @@ import team113.rc.HQRC;
 import team113.rc.NoiseTowerRC;
 import team113.rc.RC;
 import team113.rc.SoldierRC;
+import team113.stateofmind.StateOfMind;
 import team113.worldinfo.WorldInfo;
 import battlecode.common.RobotController;
 
@@ -73,6 +74,7 @@ public class RobotPlayer {
 		GoalMotor goalMotor = makeGoalMotor();
 		
 		while (true) {
+			
 			List<Goal> goals = goalMotor.motorGoals(info);
 			if (rc.isActive()) {
 				List<Action> actions = actionSelector
@@ -81,6 +83,17 @@ public class RobotPlayer {
 				for (Action action : actions) {
 					action.performAction(info);
 				}
+			}
+			rc.yield();
+		}
+	}	
+	
+	private static void live(final RobotController rc, final StateOfMind initialSOM) {
+		StateOfMind som = initialSOM;
+		while (true) {			
+			som = som.think();
+			if (rc.isActive()) {
+				som.act();
 			}
 			rc.yield();
 		}

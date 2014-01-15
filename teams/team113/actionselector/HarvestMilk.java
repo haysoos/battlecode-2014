@@ -6,7 +6,6 @@ import java.util.List;
 import team113.action.Action;
 import team113.action.Attack;
 import team113.action.Broadcast;
-import team113.action.ConstructNoiseTower;
 import team113.action.ConstructPASTR;
 import team113.action.Move;
 import team113.action.SoldierBroadcast;

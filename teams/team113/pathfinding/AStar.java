@@ -26,7 +26,7 @@ public class AStar<N> {
     	while (queue.size() > 0) {
     	  Path<N> next = queue.poll();
     	  
-    	  if (next.getHead() == target) {
+    	  if (next.getHead().equals(target)) {
     		  return next;
     	  }   
     	  
@@ -39,7 +39,7 @@ public class AStar<N> {
     		  }
     		  double cost = mMetric.evaluate(next.getHead(), elt);
     		  queue.add(next.addHead(elt, cost));
-    	  }    	  
+    	  }    	
     	}
     	return null;
     }
@@ -67,8 +67,8 @@ public class AStar<N> {
     	
 		@Override
 		public int compare(Path<N> p1, Path<N> p2) {
-			double c1 = p1.getCost() + mHeuristic.evaluate(p1.getHead(), mTarget);
-			double c2 = p1.getCost() + mHeuristic.evaluate(p1.getHead(), mTarget);
+			double c1 = p1.getCost() + 3 * mHeuristic.evaluate(p1.getHead(), mTarget);
+			double c2 = p2.getCost() + 3 * mHeuristic.evaluate(p2.getHead(), mTarget);
 			return Double.compare(c1, c2);
 		}
     }
