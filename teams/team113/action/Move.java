@@ -1,6 +1,8 @@
 package team113.action;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import team113.pathfinding.AStar;
@@ -28,6 +30,7 @@ public class Move implements Action {
 	}
 	
 	public boolean updateTarget(MapLocation newTarget) {
+		
 		currentTarget = newTarget;
 		
 		TheHeuristicClass h = new TheHeuristicClass();
@@ -116,6 +119,7 @@ public class Move implements Action {
 	public static class TheClass implements Metric<MapLocation>,
 			GraphView<MapLocation> {
 		private final SoldierRC rc;
+		private Map<MapLocation, TerrainTile> sensedTerrainMap = new HashMap<MapLocation, TerrainTile>(100);
 
 		public TheClass(SoldierRC rc) {
 			this.rc = rc;
@@ -127,10 +131,20 @@ public class Move implements Action {
 			MapLocation[] neighbors = MapLocation
 					.getAllMapLocationsWithinRadiusSq(node, 2);
 			for (MapLocation loc : neighbors) {
-				if (rc.senseTerrainTile(loc) == TerrainTile.OFF_MAP
-						|| rc.senseTerrainTile(loc) == TerrainTile.VOID) {
+				
+				TerrainTile sensedTerrainTile = null;
+				if (sensedTerrainMap .containsKey(loc)) {
+					sensedTerrainTile = sensedTerrainMap.get(loc);					
+				} else {
+					sensedTerrainTile = rc.senseTerrainTile(loc);
+					sensedTerrainMap.put(loc, sensedTerrainTile);		
+				}
+				
+				if (sensedTerrainTile == TerrainTile.OFF_MAP ||
+						sensedTerrainTile == TerrainTile.VOID) {
 					continue;
 				}
+
 				result.add(loc);
 			}
 			return result;
@@ -139,7 +153,15 @@ public class Move implements Action {
 		@Override
 		public double evaluate(MapLocation node, MapLocation target) {
 			double factor = 1;
-			if (rc.senseTerrainTile(target) == TerrainTile.ROAD) {
+			TerrainTile sensedTerrainTile = null;
+			if (sensedTerrainMap .containsKey(target)) {
+				sensedTerrainTile = sensedTerrainMap.get(target);					
+			} else {
+				sensedTerrainTile = rc.senseTerrainTile(target);
+				sensedTerrainMap.put(target, sensedTerrainTile);		
+			}
+			
+			if (sensedTerrainTile == TerrainTile.ROAD) {
 				factor = 1.2;
 			}
 			boolean xCompare = node.x == target.x;
