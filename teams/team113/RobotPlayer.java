@@ -1,6 +1,5 @@
 package team113;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import team113.action.Action;
@@ -10,13 +9,10 @@ import team113.actionselector.HarvestMilk;
 import team113.actionselector.LetsMakeSomeNoise;
 import team113.actionselector.SpoilerTheirMilk;
 import team113.common.Constants;
-import team113.goalmotor.GoalMotor;
-import team113.goals.Goal;
 import team113.rc.HQRC;
 import team113.rc.NoiseTowerRC;
 import team113.rc.RC;
 import team113.rc.SoldierRC;
-import team113.stateofmind.StateOfMind;
 import team113.worldinfo.WorldInfo;
 import battlecode.common.RobotController;
 
@@ -71,14 +67,11 @@ public class RobotPlayer {
 	private static void runGoalsThroughMotor(RobotController rc,
 			ActionSelector actionSelector, WorldInfo info) {
 		
-		GoalMotor goalMotor = makeGoalMotor();
-		
 		while (true) {
 			
-			List<Goal> goals = goalMotor.motorGoals(info);
 			if (rc.isActive()) {
 				List<Action> actions = actionSelector
-						.selectActions(info, goals);
+						.selectActions(info);
 
 				for (Action action : actions) {
 					action.performAction(info);
@@ -88,27 +81,6 @@ public class RobotPlayer {
 		}
 	}	
 	
-	private static void live(final RobotController rc, final StateOfMind initialSOM) {
-		StateOfMind som = initialSOM;
-		while (true) {			
-			som = som.think();
-			if (rc.isActive()) {
-				som.act();
-			}
-			rc.yield();
-		}
-	}
-
-	private static GoalMotor makeGoalMotor() {
-		GoalMotor goalMotor = new GoalMotor() {
-			@Override
-			public List<Goal> motorGoals(WorldInfo info) {
-				return new ArrayList<Goal>();
-			}
-		};
-		return goalMotor;
-	}
-
 	private static void lookSexy(RobotController rc) {
 		while (true) {
 			rc.yield();

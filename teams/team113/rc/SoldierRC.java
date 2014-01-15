@@ -25,6 +25,9 @@ public class SoldierRC extends RC {
 	}
 
 	public boolean canMove(Direction arg0) {
+		if (arg0 == Direction.OMNI || arg0 == Direction.NONE) {
+			return false;
+		}
 		return rc.canMove(arg0);
 	}
 

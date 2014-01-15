@@ -6,6 +6,7 @@ import java.util.List;
 import team113.rc.RC;
 import team113.rc.SoldierRC;
 import team113.worldinfo.WorldInfo;
+import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
 
 public final class Util {
@@ -26,8 +27,14 @@ public final class Util {
 		for (int i=0; i<milk.length; i++) {
 			for (int j=0; j<milk[i].length; j++) {
 				if (milk[i][j] > maxMilk) {
-					if (myPASTRs.contains(new MapLocation(i, j))) {
-						continue;
+					rc.setIndicatorString(Constants.INDICATOR_PATHING, new MapLocation(i, j).toString());
+					MapLocation temp = new MapLocation(i, j);
+					try {
+						if (myPASTRs.contains(temp) || (rc.canSenseSquare(temp) && rc.senseObjectAtLocation(temp) != null)) {
+							continue;
+						}
+					} catch (GameActionException e) {
+						rc.printErrorMessage(e);
 					}
 					x = i;
 					y = j;

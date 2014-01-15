@@ -5,7 +5,6 @@ import java.util.List;
 
 import team113.action.Action;
 import team113.action.Spawn;
-import team113.goals.Goal;
 import team113.rc.HQRC;
 import team113.rc.RC;
 import team113.worldinfo.WorldInfo;
@@ -20,7 +19,7 @@ public class AlwaysSpawn implements ActionSelector {
 	}
 	
 	@Override
-	public List<Action> selectActions(WorldInfo info, List<Goal> goals) {
+	public List<Action> selectActions(WorldInfo info) {
 		return spawnActionList;
 	}
 

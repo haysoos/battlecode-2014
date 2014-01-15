@@ -10,10 +10,10 @@ import team113.action.ConstructPASTR;
 import team113.action.Move;
 import team113.action.SoldierBroadcast;
 import team113.common.Util;
-import team113.goals.Goal;
 import team113.rc.RC;
 import team113.rc.SoldierRC;
 import team113.worldinfo.WorldInfo;
+import battlecode.common.GameActionException;
 import battlecode.common.MapLocation;
 
 public class HarvestMilk implements ActionSelector {
@@ -34,7 +34,7 @@ public class HarvestMilk implements ActionSelector {
 	}
 
 	@Override
-	public List<Action> selectActions(WorldInfo info, List<Goal> goals) {
+	public List<Action> selectActions(WorldInfo info) {
 		List<Action> result = new ArrayList<Action>();
 		info.updateWorldInfo();
 
@@ -45,6 +45,19 @@ public class HarvestMilk implements ActionSelector {
 			result.add(constructPASTR);
 		} else {
 
+			if (rc.canSenseSquare(info.getGoalLocation())) {
+				try {
+					if (rc.senseObjectAtLocation(info.getGoalLocation()) != null) {
+						MapLocation attackLocation = info.getGoalLocation().add(2, 2);
+						if (rc.canAttackSquare(attackLocation)) {
+							rc.attackSquare(attackLocation);
+						}
+						
+					}
+				} catch (GameActionException e) {
+					rc.printErrorMessage(e);
+				}
+			}
 			if (rc.sensePastrLocations(rc.getTeam()).length >= 4 ||
 					rc.sensePastrLocations(rc.getTeam().opponent()).length > 1) {
 				MapLocation enemyPastr = Util.findEnemyMapLocationWithMostMilk(rc);
@@ -60,7 +73,7 @@ public class HarvestMilk implements ActionSelector {
 	}
 
 	private boolean reachedGoal(MapLocation goalLocation) {
-		return goalLocation.distanceSquaredTo(rc.getLocation()) < 5;
+		return goalLocation.distanceSquaredTo(rc.getLocation()) < 2;
 	}
 
 

@@ -9,7 +9,6 @@ import team113.action.Attack;
 import team113.action.Broadcast;
 import team113.action.Move;
 import team113.action.SoldierBroadcast;
-import team113.goals.Goal;
 import team113.rc.RC;
 import team113.rc.SoldierRC;
 import team113.worldinfo.WorldInfo;
@@ -30,7 +29,7 @@ public class BeStupid implements ActionSelector {
 	}
 
 	@Override
-	public List<Action> selectActions(WorldInfo info, List<Goal> goals) {
+	public List<Action> selectActions(WorldInfo info) {
 		List<Action> result = new ArrayList<Action>();
 		if (rand.nextBoolean()) {
 			result.add(move);
