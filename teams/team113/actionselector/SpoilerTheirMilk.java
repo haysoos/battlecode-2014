@@ -21,6 +21,7 @@ public class SpoilerTheirMilk implements ActionSelector {
 	private final Attack attack;
 	private final Broadcast<SoldierRC> broadcast;
 	private final Move move;
+	@SuppressWarnings("unused")
 	private final Action constructNoiseTower;
 
 	public SpoilerTheirMilk(SoldierRC rc) {

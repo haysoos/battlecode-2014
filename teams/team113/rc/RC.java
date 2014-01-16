@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import team113.common.Constants;
-import team113.communication.Message;
 import battlecode.common.GameActionException;
 import battlecode.common.GameObject;
 import battlecode.common.MapLocation;
@@ -141,7 +140,6 @@ public class RC {
 	public void broadcast(int channel, int encodedMessage) {
 		try {
 			rc.broadcast(channel, encodedMessage);
-			setIndicatorString(Constants.INDICATOR_MESSAGE, Message.decode(encodedMessage).toString());
 		} catch (GameActionException e) {
 			printErrorMessage(e);
 		}

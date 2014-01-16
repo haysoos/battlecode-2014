@@ -7,7 +7,18 @@ import battlecode.common.MapLocation;
  * @author Jesus Medrano
  * <a href="jesus.medrano@yahoo.com">jesus.medrano@yahoo.com</a>
  */
-public class Message implements Comparable<Message> {
+public class MapLocationMessage implements MessagePayload, Comparable<MapLocationMessage> {
+		
+	public enum MessageIntent {
+		REQUEST,
+		CONFIRMATION, 
+		RESOURCE,
+		ATTACK,
+		DEFEND,
+		PROMOTE,
+		ENEMYAT, 
+		RETURN_TO_BASE,
+	}
 
 	private MapLocation mapLocation;
 	private MessageIntent intent;
@@ -17,6 +28,31 @@ public class Message implements Comparable<Message> {
 	private static final int X_MASK = Y_MASK << SIZE_OF_COORDINATE;
 	private static final int MESSAGE_TYPE_MASK = ((1 << SIZE_OF_MESSAGE_TYPE) - 1) 
 			<< (SIZE_OF_COORDINATE * 2);
+	
+	
+	@Override
+	public int[] encode() {
+		int code = intent.ordinal() << (SIZE_OF_COORDINATE * 2) 
+				| mapLocation.x << SIZE_OF_COORDINATE 
+				| mapLocation.y;
+		return new int[]{ code };
+	}
+
+
+	@Override
+	public void decode(int[] encodedMessage) {
+		MapLocation location = extractMapLocation(encodedMessage[0]);
+		setMapLocation(location);
+	
+		MessageIntent intent = extractMessageIntent(encodedMessage[0]);
+		setMessageIntent(intent);
+	}
+
+
+	@Override
+	public PayloadType getPayloadType() {
+		return PayloadType.MAP_LOCATION;
+	}
 
 
 	public MessageIntent getIntent() {
@@ -35,31 +71,7 @@ public class Message implements Comparable<Message> {
 		this.intent = intent;
 	}
 
-	/**
-	 * @return <code>int</code> representation of this message.
-	 */
-	public int encode() {
-		int code = intent.ordinal() << (SIZE_OF_COORDINATE * 2) 
-				| mapLocation.x << SIZE_OF_COORDINATE 
-				| mapLocation.y;
-		return code;
-	}
 
-	/**
-	 * Static method to decode a message sent as an integer.
-	 * @param encodedMessage
-	 * @return Message Object
-	 */
-	public static Message decode(int encodedMessage) {
-		Message message = new Message();
-		MapLocation location = extractMapLocation(encodedMessage);
-		message.setMapLocation(location);
-
-		MessageIntent intent = extractMessageIntent(encodedMessage);
-		message.setMessageIntent(intent);
-
-		return message;
-	}
 
 	private static MessageIntent extractMessageIntent(int encodedMessage) {
 		int messageTypeOrdinal;
@@ -86,7 +98,7 @@ public class Message implements Comparable<Message> {
 	}
 
 	@Override
-	public int compareTo(Message o) {
+	public int compareTo(MapLocationMessage o) {
 		return this.intent.ordinal() - o.intent.ordinal();
 	}
 
